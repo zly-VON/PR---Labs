@@ -1,6 +1,7 @@
 from player import Player
 from datetime import datetime
 import xml.etree.ElementTree as ET
+import player_pb2
 
 class PlayerFactory:
     def to_json(self, players):
@@ -77,10 +78,37 @@ class PlayerFactory:
         '''
             This function should transform a binary protobuf string into a list with Player objects.
         '''
-        pass
+        proto_players_list = player_pb2.PlayersList()
+        proto_players_list.ParseFromString(binary)
+        players = []
+        
+        for proto_player in proto_players_list.player:
+            player = Player(
+                proto_player.nickname,
+                proto_player.email,
+                proto_player.date_of_birth,
+                proto_player.xp,
+                player_pb2.Class.Name(proto_player.cls),
+            )
+            players.append(player)
+
+        return players
+        # pass
 
     def to_protobuf(self, list_of_players):
         '''
             This function should transform a list with Player objects intoa binary protobuf string.
         '''
-        pass
+        proto_players_list = player_pb2.PlayersList()
+
+        for player in list_of_players:
+            proto_player = proto_players_list.player.add()
+            proto_player.nickname = player.nickname
+            proto_player.email = player.email
+            proto_player.date_of_birth = player.date_of_birth.strftime("%Y-%m-%d")
+            proto_player.xp = player.xp
+            proto_player.cls = player.cls
+        protobuf_data = proto_players_list.SerializeToString()
+
+        return protobuf_data
+        # pass
