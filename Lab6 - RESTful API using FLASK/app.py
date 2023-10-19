@@ -9,7 +9,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 def create_app():
     app = Flask(__name__)
 
-    # Configure SQLAlchemy to use SQLite
+    # Configure SQLAlchemy to use PostgreSQL
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pr:1234@localhost:5432/pr6'
     db.init_app(app)
     return app
