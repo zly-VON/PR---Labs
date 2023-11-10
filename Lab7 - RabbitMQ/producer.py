@@ -4,7 +4,7 @@ from web_crawler import parse
 RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'queue'
 
-def get_urls(max_page):
+def get_urls(max_page = 1):
     start_page = 1
     start_url = 'https://999.md/ro/list/real-estate/apartments-and-rooms?applied=1&eo=12900&eo=12912&eo=12885&eo=13859&ef=32&ef=33&o_33_1='
     urls = parse(start_url, start_page, max_page)
@@ -26,5 +26,5 @@ def main(urls):
     connection.close()
 
 if __name__ == "__main__":
-    urls = get_urls(1)
+    urls = get_urls(2)
     main(urls)

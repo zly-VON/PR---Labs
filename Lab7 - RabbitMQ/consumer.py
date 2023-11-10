@@ -7,17 +7,19 @@ RABBITMQ_HOST = 'localhost'
 QUEUE_NAME = 'queue'
 
 class Consumer:
-    def __init__(self, db):
+    def __init__(self, db, lock):
         self.db = db
+        self.lock = lock
 
     def callback(self, ch, method, properties, body):
         url = body.decode('utf-8')
-        sleep(2)
+        sleep(3)
 
         data = parse(url)
         try:
             if data is not None:
-                self.db.insert(data)
+                with self.lock:
+                    self.db.insert(data)
                 print(f" [x] ({threading.current_thread().name}) Received URL: {url}")
         except Exception as e:
             print(f"Error: {e}")
@@ -37,7 +39,8 @@ class Consumer:
 
 def main(file_name, threads_num):
     db = TinyDB(f'{file_name}', encoding='utf-8')
-    consumer = Consumer(db)
+    lock = threading.Lock()
+    consumer = Consumer(db, lock)
 
     threads = []
 
@@ -51,6 +54,6 @@ def main(file_name, threads_num):
 
 if __name__ == "__main__":
     file_name = "database.json"
-    num_consumers = 3
+    num_consumers = 20
 
     main(file_name, num_consumers)
